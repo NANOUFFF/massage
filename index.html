@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随便写点</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        .submit-btn.loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .submit-btn.loading::after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            right: 16px;
+            margin-top: -8px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .float-text-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .float-text {
+            position: absolute;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            animation: float 6s ease-in-out forwards;
+            padding: 4px 8px;
+            border-radius: 4px;
+            max-width: 70%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-sizing: border-box;
+        }
+
+        @keyframes float {
+            0% {
+                opacity: 1;
+                transform: translateY(var(--startY)) scale(0.8);
+            }
+            70% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-40vh) scale(1.2);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .float-text {
+                font-size: 18px;
+                max-width: 40%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="animation-container">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+    </div>
+
+    <div class="form-container">
+        <h1 class="title">说点什么好呢?</h1>
+        <form action="/api/submit" method="POST" class="message-form" id="messageForm">
+            <div class="form-group">
+                <label for="nickname">怎么称呼</label>
+                <input type="text" id="nickname" name="nickname" placeholder="昵称" required>
+            </div>
+            <div class="form-group">
+                <label for="message">内容</label>
+                <textarea id="message" name="message" placeholder="随便写写?" required></textarea>
+            </div>
+            <button type="submit" class="submit-btn">说完了</button>
+        </form>
+    </div>
+
+    <div class="float-text-container" id="floatTextContainer"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                document.querySelector('.animation-container').style.opacity = '0';
+                setTimeout(() => {
+                    document.querySelector('.animation-container').style.display = 'none';
+                    document.querySelector('.form-container').style.opacity = '1';
+                    document.querySelector('.form-container').style.transform = 'translateY(0)';
+                }, 500);
+            }, 2000);
+
+            const messageForm = document.getElementById('messageForm');
+            const floatContainer = document.getElementById('floatTextContainer');
+            const submitBtn = messageForm.querySelector('.submit-btn');
+            const originalBtnText = submitBtn.textContent;
+            const nicknameInput = document.getElementById('nickname');
+
+            messageForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const userName = nicknameInput.value.trim();
+                if (!userName) return;
+
+                submitBtn.classList.add('loading');
+                submitBtn.textContent = '提交中...';
+
+                const formData = new FormData(this);
+                try {
+                    const response = await fetch(this.action, {
+                        method: this.method,
+                        body: formData
+                    });
+
+                    if (!response.ok) throw new Error('服务端请求失败');
+                    const result = await response.json();
+
+                    if (result.success) {
+                        createFloatTexts(userName);
+                        this.reset();
+                    } else {
+                        alert('提交失败: ' + (result.message || '未知错误'));
+                    }
+                } catch (error) {
+                    console.error('提交出错:', error);
+                    alert('提交失败，请稍后再试');
+                } finally {
+                    submitBtn.classList.remove('loading');
+                    submitBtn.textContent = originalBtnText;
+                }
+            });
+
+            function createFloatTexts(name) {
+                floatContainer.innerHTML = '';
+                const isMobile = window.innerWidth <= 768;
+                const textCount = isMobile ? 80 : 100;
+                const messages = [
+                    `${name}，记得好好吃饭呀`,
+                    `${name}，天冷了多穿点～`,
+                    `${name}，早点休息别熬夜`,
+                    `${name}，多喝热水对身体好`,
+                    `${name}，工作再忙也要放松`,
+                    `${name}，今天也要照顾好自己`,
+                    `${name}，累了就歇一歇`,
+                    `${name}，出门记得带伞哦`,
+                    `${name}，照顾自己最重要`,
+                    `${name}，记得吃水果呀～`,
+                    `${name}笑起来真好看`,
+                    `${name}今天也超棒的！`,
+                    `${name}真的很优秀呀`,
+                    `${name}太让人惊艳啦`,
+                    `${name}总能带来温暖`,
+                    `${name}的想法好有创意`,
+                    `跟${name}聊天很开心`,
+                    `${name}认真的样子很帅`,
+                    `${name}很会鼓励人呢`,
+                    `认识${name}太幸运啦`,
+                    `${name}今天要开开心心`,
+                    `${name}，好运会陪着你～`,
+                    `${name}，一切都会越来越好`,
+                    `${name}，每天都有小确幸`,
+                    `${name}，未来可期继续加油`,
+                    `${name}，今天也在闪闪发光`,
+                    `${name}，好事正向你奔来`,
+                    `${name}，被世界温柔以待`,
+                    `${name}，每天都比昨天快乐`,
+                    `${name}，努力会有回报的`
+                ];
+                const colors = [
+                    '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
+                    '#DDA0DD', '#98D8C8', '#FF8C42', '#6A0572', '#2E5EAA'
+                ];
+
+                const tempEl = document.createElement('div');
+                tempEl.className = 'float-text';
+                tempEl.style.visibility = 'hidden';
+                tempEl.style.position = 'fixed';
+                document.body.appendChild(tempEl);
+
+                const batchSize = 5;
+                const totalBatches = Math.ceil(textCount / batchSize);
+                
+                for (let batch = 0; batch < totalBatches; batch++) {
+                    setTimeout(() => {
+                        const start = batch * batchSize;
+                        const end = Math.min(start + batchSize, textCount);
+                        
+                        for (let i = start; i < end; i++) {
+                            const floatText = document.createElement('div');
+                            floatText.className = 'float-text';
+                            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+                            floatText.textContent = randomMsg;
+
+                            tempEl.textContent = randomMsg;
+                            const textWidth = tempEl.offsetWidth;
+
+                            const screenWidth = window.innerWidth;
+                            let maxLeft;
+                            if (isMobile) {
+                                maxLeft = screenWidth - textWidth - 20;
+                                maxLeft = Math.min(maxLeft, screenWidth * 0.45);
+                            } else {
+                                maxLeft = screenWidth - textWidth - 20;
+                            }
+                            const safeMaxLeft = Math.max(10, maxLeft);
+                            const randomLeft = Math.max(10, Math.min(Math.random() * safeMaxLeft, safeMaxLeft));
+                            
+                            floatText.style.left = `${randomLeft}px`;
+
+                            const randomDuration = isMobile ? 3 + Math.random() * 5 : 3 + Math.random() * 4;
+                            floatText.style.animationDuration = `${randomDuration}s`;
+
+                            const screenHeight = window.innerHeight;
+                            const randomStartY = screenHeight * (1 + Math.random() * 0.4);
+                            floatText.style.setProperty('--startY', `${randomStartY}px`);
+
+                            floatText.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                            floatText.style.transform = `rotate(${Math.random() * 20 - 10}deg)`;
+                            floatText.style.opacity = 0.9 + Math.random() * 0.1;
+
+                            floatContainer.appendChild(floatText);
+
+                            setTimeout(() => {
+                                floatText.remove();
+                            }, (randomDuration - 0.5) * 1000);
+                        }
+                    }, batch * 300);
+                }
+
+                document.body.removeChild(tempEl);
+            }
+        });
+    </script>
+</body>
+</html>
