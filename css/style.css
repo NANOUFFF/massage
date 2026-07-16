@@ -7,11 +7,13 @@
 
 body {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    overflow-y: auto;
+    padding: 20px;
 }
 
 .animation-container {
@@ -133,4 +135,60 @@ body {
     background: linear-gradient(to right, #4169e1, #6495ed);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(65, 105, 225, 0.3);
+}
+
+.link-box {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 500px;
+    margin-top: 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+}
+
+.link-box h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #333;
+    font-weight: 300;
+    font-size: 16px;
+}
+
+.link-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.link-container a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    border-radius: 8px;
+    color: #555;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.link-container a:hover {
+    background: linear-gradient(135deg, #6495ed 0%, #4169e1 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(65, 105, 225, 0.3);
+}
+
+.link-icon {
+    font-size: 16px;
+}
+
+.link-text {
+    font-weight: 500;
 }
