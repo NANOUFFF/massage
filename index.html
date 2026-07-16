@@ -106,7 +106,7 @@
     </div>
 
     <!-- 链接盒子 -->
-    <div class="link-box">
+    <!-- <div class="link-box">
         <h3>其他链接</h3>
         <div class="link-container">
             <a href="mqqwpa://im/chat?chat_type=wpa&uin=467414464&version=1&src_type=web&web_src=oicqzone.com">
@@ -118,7 +118,7 @@
                 <span class="link-text">粒子效果</span>
             </a>
         </div>
-    </div>
+    </div> -->
 
 
 
@@ -132,8 +132,11 @@
                     document.querySelector('.animation-container').style.display = 'none';
                     document.querySelector('.form-container').style.opacity = '1';
                     document.querySelector('.form-container').style.transform = 'translateY(0)';
-                    document.querySelector('.link-box').style.opacity = '1';
-                    document.querySelector('.link-box').style.transform = 'translateY(0)';
+                    const linkBox = document.querySelector('.link-box');
+                    if (linkBox) {
+                        linkBox.style.opacity = '1';
+                        linkBox.style.transform = 'translateY(0)';
+                    }
                 }, 500);
             }, 2000);
 
